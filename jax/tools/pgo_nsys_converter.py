@@ -42,7 +42,7 @@ if __name__ == '__main__':
   # Older versions of nsys use `nvtxsum` for the report name so determine which is available.
   query_reports_command = [nsys_path, "stats", "--help-reports"]
   reports_list = subprocess.run(query_reports_command, capture_output=True, text=True).stdout
-  report_name = "nvtx_sum" if "nvtx_sum" in reports_list else "nvtxsum"
+  report_name = "nvtx_kern_sum" if "nvtx_kern_sum" in reports_list else "nvtxkernsum"
 
   assert isinstance(nsys_path, str)
   stats_command = [nsys_path, "stats", "--force-overwrite", "true", "--force-export", "true", "--report", report_name, f"{args.profile_path}", "-o", f"{args.pgle_output_path}"]
@@ -59,7 +59,7 @@ if __name__ == '__main__':
       with open(f"{pgle_folder}{pgle_filename}.pbtxt_{report_name}.csv", newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-          name = row['Range']
+          name = row['NVTX Range']
           time_ns = float(row['Avg (ns)'])
           m = thunk_re.search(name)
           if m is not None:
